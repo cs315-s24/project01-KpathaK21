@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h> 
-
+#include <ctype.h>
 // Function to calculate the length of a string
 int strLength(const char *str) {
     int len = 0;
@@ -35,43 +35,51 @@ uint32_t string_to_int(const char *str) {
         // Check if the input starts with a prefix
         int startIdx = 0;
         
-        if (length >= 2 && str[0] == '0' && (str[1] == 'b' || str[1] == 'B')) {
-            startIdx = 2;
-    
-            for (int i = startIdx; i < length; i++) {
-                if (str[i] == '0' || str[i] == '1') {
-                    result = result * 2 + (str[i] - '0');
-                } else {
-                    return 0; // Bad input for binary
+       if (length >= 2 && str[0] == '0' && (str[1] == 'b' || str[1] == 'B')) {
+        startIdx = 2;
+
+        for (int i = startIdx; i < length; i++) {
+            if (str[i] == '0' || str[i] == '1') {
+                result = result * 2 + (str[i] - '0');
+            } else {
+                printf("Bad input\n");
+                return 0; // Bad input for binary
+            }
+        }
+    } else if (length >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+        startIdx = 2;
+
+        for (int i = startIdx; i < length; i++) {
+            if ((str[i] >= '0' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F')) {
+                result = result * 16 + (isdigit(str[i]) ? str[i] - '0' : (tolower(str[i]) - 'a') + 10);
+            } else {
+               printf("Bad input\n");
+                                return 0; // Bad input for hexadecimal
+            }
+        }
+        } else if (length >= 1 && str[0] == '0') {
+                startIdx = 1;
+        
+                for (int i = startIdx; i < length; i++) {
+                    if (str[i] >= '0' && str[i] <= '7') {
+                        result = result * 8 + (str[i] - '0');
+                    } else {
+                        printf("Bad input\n");
+                                        return 0; // Bad input for octal
+                    }
+                }
+            } else {
+                for (int i = startIdx; i < length; i++) {
+                    if (str[i] >= '0' && str[i] <= '9') {
+                        result = result * 10 + (str[i] - '0');
+                    } else {
+						 printf("Bad input\n");
+                        return 0; // Bad input for decimal
+                    }
                 }
             }
-             } else if (length >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-        startIdx = 2;
-    } else if (length >= 1 && str[0] == '0') {
-        startIdx = 1;
         
-        for (int i = startIdx; i < length; i++) {
-            if (str[i] >= '0' && str[i] <= '7') {
-                result = result * 8 + (str[i] - '0');
-            } else {
-                return 0; // Bad input for octal
-            }
-        }
-    }
-    // Handle hexadecimal and decimal
-        for (int i = startIdx; i < length; i++) {
-            if (str[i] >= '0' && str[i] <= '9') {
-                result = result * 10 + (str[i] - '0');
-            } else if (str[i] >= 'a' && str[i] <= 'f') {
-                result = result * 16 + (str[i] - 'a' + 10);
-            } else if (str[i] >= 'A' && str[i] <= 'F') {
-                result = result * 16 + (str[i] - 'A' + 10);
-            } else {
-                return 0; // Bad input
-            }
-        }
-    
-        return result;
+            return result;
 }
 
 // Function to convert an integer to a string
@@ -101,24 +109,20 @@ void int_to_string(uint32_t value, char *str, int base) {
 // Function to convert a number to the specified base
 char* convertBase(const char* number, int base) {
 
-// Convert the input string to an integer
+ // Convert the input string to an integer
     uint32_t num = string_to_int(number);
 
     // Buffer to store the result
     char* result = (char*)malloc(33); // Assuming 32-bit integer, plus one for null terminator
     int index = 0;
 
-// Check if the input starts with '0b'
-    if (number[0] == '0' && (number[1] == 'b' || number[1] == 'B')) {
-        base = 2;
-    }
-
-
     // Check for the output base and format accordingly
     do {
         int remainder = num % base;
 
         if (remainder < 10) {
+            result[index++] = remainder + '0';
+        } else if (base == 2) {
             result[index++] = remainder + '0';
         } else {
             result[index++] = remainder - 10 + 'a';
