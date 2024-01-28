@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdio.h> 
 #include <ctype.h>
+
+
 // Function to calculate the length of a string
 int strLength(const char *str) {
     int len = 0;
