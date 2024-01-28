@@ -50,25 +50,25 @@ uint32_t string_to_int(const char *str) {
         startIdx = 2;
 
         for (int i = startIdx; i < length; i++) {
-            if ((str[i] >= '0' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F')) {
-                result = result * 16 + (isdigit(str[i]) ? str[i] - '0' : (tolower(str[i]) - 'a') + 10);
-            } else {
-               printf("Bad input\n");
-                                return 0; // Bad input for hexadecimal
-            }
-        }
-        } else if (length >= 1 && str[0] == '0') {
-                startIdx = 1;
-        
-                for (int i = startIdx; i < length; i++) {
-                    if (str[i] >= '0' && str[i] <= '7') {
-                        result = result * 8 + (str[i] - '0');
+                    if ((str[i] >= '0' && str[i] <= '9') || (str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F')) {
+                        result = result * 16 + (isdigit(str[i]) ? str[i] - '0' : (tolower(str[i]) - 'a') + 10);
                     } else {
-                        printf("Bad input\n");
-                                        return 0; // Bad input for octal
+                       printf("Bad input\n");
+                                        return 0; // Bad input for hexadecimal
                     }
                 }
-            } else {
+                } else if (length >= 1 && str[0] == '0') {
+                        startIdx = 1;
+                
+                        for (int i = startIdx; i < length; i++) {
+                            if (str[i] >= '0' && str[i] <= '7') {
+                                result = result * 8 + (str[i] - '0');
+                            } else {
+                                printf("Bad input\n");
+                                                return 0; // Bad input for octal
+                            }
+                        }
+                         } else {
                 for (int i = startIdx; i < length; i++) {
                     if (str[i] >= '0' && str[i] <= '9') {
                         result = result * 10 + (str[i] - '0');
@@ -108,6 +108,17 @@ void int_to_string(uint32_t value, char *str, int base) {
 
 // Function to convert a number to the specified base
 char* convertBase(const char* number, int base) {
+// If the input starts with '0b', check for binary numbers
+    if (number[0] == '0' && (number[1] == 'b' || number[1] == 'B')) {
+        // Check if the rest of the string contains only '0' and '1'
+        for (int i = 2; number[i] != '\0'; i++) {
+            if (number[i] != '0' && number[i] != '1') {
+                char* result = (char*)malloc(12); // Assuming 11 characters for "bad input" + null terminator
+                strcpy(result, "bad input");
+                return result;
+            }
+        }
+    }
 
  // Convert the input string to an integer
     uint32_t num = string_to_int(number);
